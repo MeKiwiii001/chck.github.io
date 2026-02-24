@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CHCK. — Life of Being a Chuck</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── CUSTOM SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(6,14,26,0.8); }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #0ea5e9, #6366f1); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(to bottom, #38bdf8, #818cf8); border: 2px solid transparent; background-clip: padding-box; }
+    html { scrollbar-width: thin; scrollbar-color: #3b82f6 rgba(6,14,26,0.8); }
+    .panel-body::-webkit-scrollbar { width: 6px; }
+    .panel-body::-webkit-scrollbar-track { background: transparent; }
+    .panel-body::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.3); border-radius: 10px; }
+    .panel-body::-webkit-scrollbar-thumb:hover { background: rgba(56,189,248,0.5); }
+
+    body {
+      min-height: 100vh;
+      background: #060e1a;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .intro-screen {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #060e1a;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    .intro-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .intro-logo {
+      font-size: 52px; font-weight: 900; letter-spacing: -2px;
+      background: linear-gradient(135deg, #fff 0%, #7dd3fc 50%, #a5b4fc 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      opacity: 0; animation: introFadeUp 1s ease 0.3s forwards;
+    }
+    .intro-logo .dot { color: #38bdf8; -webkit-text-fill-color: #38bdf8; }
+    .intro-tagline {
+      font-size: 14px; color: #475569; letter-spacing: 3px; text-transform: uppercase;
+      margin-top: 12px; opacity: 0; animation: introFadeUp 1s ease 0.7s forwards;
+    }
+    .intro-line {
+      width: 60px; height: 2px; border-radius: 2px; margin-top: 24px;
+      background: linear-gradient(to right, #0ea5e9, #6366f1);
+      opacity: 0; animation: introFadeUp 0.8s ease 1s forwards;
+    }
+    .intro-enter {
+      margin-top: 32px; padding: 10px 28px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+      color: #94a3b8; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; opacity: 0; animation: introFadeUp 0.8s ease 1.3s forwards;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+    .intro-enter:hover { background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.3); color: #7dd3fc; }
+    @keyframes introFadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    .hearts-container { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .falling-heart {
+      position: absolute; top: -40px; color: rgba(56,189,248,0.12);
+      font-size: 18px; animation: heartFall linear infinite;
+      filter: blur(0.5px);
+    }
+    @keyframes heartFall {
+      0% { transform: translateY(-40px) rotate(0deg) scale(1); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(calc(100vh + 40px)) rotate(360deg) scale(0.6); opacity: 0; }
+    }
+
+    .blob1, .blob2 { position: fixed; border-radius: 50%; pointer-events: none; filter: blur(120px); z-index: 0; }
+    .blob1 { top: 0; left: 25%; width: 600px; height: 600px; background: rgba(14,165,233,0.04); }
+    .blob2 { bottom: 0; right: 25%; width: 500px; height: 500px; background: rgba(99,102,241,0.04); }
+
+    .wrapper { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
+
+    header { display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; }
+    .logo { display: flex; align-items: center; gap: 2px; font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+    .logo span { color: white; }
+    .logo .dot { color: #38bdf8; }
+
+    .hamburger-wrap { position: relative; }
+    .hamburger-btn {
+      width: 44px; height: 44px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
+      color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s;
+    }
+    .hamburger-btn:hover { background: rgba(255,255,255,0.1); }
+    .hamburger-btn svg { width: 20px; height: 20px; }
+
+    .dropdown {
+      position: absolute; right: 0; top: 56px; width: 280px;
+      background: rgba(10,22,40,0.97); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5); overflow: hidden; display: none;
+      animation: fadeDown 0.25s ease; z-index: 100;
+    }
+    .dropdown.open { display: block; }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .dropdown-inner { padding: 8px; }
+    .dropdown-section-label {
+      color: #475569; font-size: 9px; text-transform: uppercase; letter-spacing: 2px;
+      font-weight: 700; padding: 4px 12px; margin-top: 4px;
+    }
+    .dropdown-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 4px 8px; }
+    .menu-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px;
+      cursor: pointer; border: none; background: none; width: 100%; text-align: left; transition: background 0.2s;
+    }
+    .menu-item:hover { background: rgba(255,255,255,0.05); }
+    .menu-item:hover .menu-icon { background: rgba(56,189,248,0.2); }
+    .menu-item:hover .chevron { color: #38bdf8; }
+    .menu-icon {
+      width: 36px; height: 36px; border-radius: 10px; background: rgba(56,189,248,0.1);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s;
+    }
+    .menu-icon svg { width: 16px; height: 16px; color: #38bdf8; }
+    .menu-icon.green { background: rgba(16,185,129,0.1); }
+    .menu-icon.green svg { color: #34d399; }
+    .menu-icon.yellow { background: rgba(245,158,11,0.1); }
+    .menu-icon.yellow svg { color: #fbbf24; }
+    .menu-text { flex: 1; }
+    .menu-label { font-size: 14px; font-weight: 600; color: white; }
+    .menu-desc { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+    .chevron { color: #475569; transition: color 0.2s; }
+    .chevron svg { width: 14px; height: 14px; }
+    .dropdown-footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 8px 16px; font-size: 10px; color: #475569; text-align: center; }
+
+    .hero { display: flex; flex-direction: column; align-items: center; padding: 32px 24px 16px; }
+    .title-btn { position: relative; cursor: pointer; border: none; background: none; padding: 0; }
+    .title-glow {
+      position: absolute; inset: -4px;
+      background: linear-gradient(to right, rgba(14,165,233,0.2), rgba(59,130,246,0.2), rgba(99,102,241,0.2));
+      border-radius: 24px; filter: blur(20px); opacity: 0.6; transition: opacity 0.5s, filter 0.5s;
+    }
+    .title-btn:hover .title-glow { opacity: 1; filter: blur(28px); }
+    .title-box {
+      position: relative; padding: 28px 56px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(8px); transition: background 0.5s, border-color 0.5s;
+    }
+    .title-btn:hover .title-box { background: rgba(255,255,255,0.06); border-color: rgba(56,189,248,0.3); }
+    .title-box h1 {
+      font-size: clamp(28px, 5vw, 56px); font-weight: 900;
+      background: linear-gradient(to right, #fff, #e0f2fe, #7dd3fc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; text-align: center; line-height: 1.2;
+    }
+    .title-hint { font-size: 11px; color: rgba(56,189,248,0.6); text-align: center; margin-top: 12px; letter-spacing: 4px; text-transform: uppercase; font-weight: 500; }
+
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 200; display: none; }
+    .overlay.open { display: block; }
+    .modal {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95);
+      z-index: 201; width: 90vw; max-width: 480px; border-radius: 28px;
+      background: linear-gradient(to bottom, #0d1f3c, #071224);
+      border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      overflow: hidden; display: none; opacity: 0; transition: opacity 0.25s, transform 0.25s;
+    }
+    .modal.open { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    .modal-bar { height: 4px; background: linear-gradient(to right, #0ea5e9, #3b82f6, #6366f1); }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.7); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.12); }
+    .modal-close svg { width: 14px; height: 14px; }
+    .modal-body { padding: 32px; max-height: 80vh; overflow-y: auto; }
+    .avatar {
+      width: 72px; height: 72px; border-radius: 18px;
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 900; margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(14,165,233,0.25);
+    }
+    .modal-body h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .modal-location { display: flex; align-items: center; gap: 6px; color: #94a3b8; font-size: 13px; margin-bottom: 16px; }
+    .modal-location svg { width: 14px; height: 14px; color: #38bdf8; }
+    .modal-body p { color: #cbd5e1; line-height: 1.7; font-size: 14px; margin-bottom: 20px; }
+    .modal-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+    .tag svg { width: 14px; height: 14px; }
+    .tag.sky { background: rgba(14,165,233,0.12); border: 1px solid rgba(14,165,233,0.2); color: #7dd3fc; }
+    .tag.indigo { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.2); color: #a5b4fc; }
+    .tag.green { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.2); color: #6ee7b7; }
+    .tag.pink { background: rgba(244,63,94,0.12); border: 1px solid rgba(244,63,94,0.2); color: #fda4af; }
+    .tag.amber { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.2); color: #fde68a; }
+    .tag.violet { background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.2); color: #c4b5fd; }
+    .tag.slate { background: rgba(100,116,139,0.12); border: 1px solid rgba(100,116,139,0.2); color: #cbd5e1; }
+    .tag.rose { background: rgba(251,113,133,0.12); border: 1px solid rgba(251,113,133,0.2); color: #fecdd3; }
+    .tag.teal { background: rgba(20,184,166,0.12); border: 1px solid rgba(20,184,166,0.2); color: #5eead4; }
+    .tag.cyan { background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.2); color: #67e8f9; }
+
+    .cards-section { padding: 40px 48px; }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .card {
+      position: relative; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02); padding: 28px; display: flex; flex-direction: column;
+      overflow: hidden; transition: border-color 0.4s;
+    }
+    .card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s; border-radius: 20px; }
+    .card:hover::before { opacity: 1; }
+    .card:hover .card-icon { transform: scale(1.1); }
+    .card.sky:hover { border-color: rgba(56,189,248,0.3); }
+    .card.sky::before { background: linear-gradient(135deg, rgba(14,165,233,0.15), rgba(37,99,235,0.15)); }
+    .card.sky .card-btn { color: #7dd3fc; }
+    .card.sky .card-btn:hover { background: rgba(14,165,233,0.2); border-color: rgba(56,189,248,0.3); }
+    .card.blue:hover { border-color: rgba(96,165,250,0.3); }
+    .card.blue::before { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(99,102,241,0.15)); }
+    .card.blue .card-btn { color: #93c5fd; }
+    .card.blue .card-btn:hover { background: rgba(59,130,246,0.2); border-color: rgba(96,165,250,0.3); }
+    .card.indigo:hover { border-color: rgba(165,180,252,0.3); }
+    .card.indigo::before { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15)); }
+    .card.indigo .card-btn { color: #a5b4fc; }
+    .card.indigo .card-btn:hover { background: rgba(99,102,241,0.2); border-color: rgba(165,180,252,0.3); }
+    .card.green:hover { border-color: rgba(52,211,153,0.3); }
+    .card.green::before { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(14,165,233,0.15)); }
+    .card.green .card-btn { color: #6ee7b7; }
+    .card.green .card-btn:hover { background: rgba(16,185,129,0.2); border-color: rgba(52,211,153,0.3); }
+    .card.pink:hover { border-color: rgba(251,113,133,0.3); }
+    .card.pink::before { background: linear-gradient(135deg, rgba(244,63,94,0.15), rgba(236,72,153,0.15)); }
+    .card.pink .card-btn { color: #fda4af; }
+    .card.pink .card-btn:hover { background: rgba(244,63,94,0.15); border-color: rgba(251,113,133,0.3); }
+    .card.yellow:hover { border-color: rgba(251,191,36,0.3); }
+    .card.yellow::before { background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(234,179,8,0.15)); }
+    .card.yellow .card-btn { color: #fde68a; }
+    .card.yellow .card-btn:hover { background: rgba(245,158,11,0.15); border-color: rgba(251,191,36,0.3); }
+    .card-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px; position: relative; z-index: 1; transition: transform 0.3s;
+    }
+    .card-icon svg { width: 22px; height: 22px; }
+    .card-icon.sky { background: rgba(14,165,233,0.15); color: #38bdf8; }
+    .card-icon.blue { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .card-icon.indigo { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+    .card-icon.green { background: rgba(16,185,129,0.15); color: #34d399; }
+    .card-icon.pink { background: rgba(244,63,94,0.15); color: #fb7185; }
+    .card-icon.yellow { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .card h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; position: relative; z-index: 1; }
+    .card p { font-size: 13px; color: #94a3b8; line-height: 1.7; flex: 1; margin-bottom: 24px; position: relative; z-index: 1; }
+    .card-btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.05);
+      font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer;
+      transition: background 0.3s, border-color 0.3s; position: relative; z-index: 1; width: fit-content;
+    }
+    .card-btn:hover .arrow { transform: translateX(4px); }
+    .arrow { transition: transform 0.2s; }
+    .arrow svg { width: 14px; height: 14px; }
+
+    .section-divider {
+      display: flex; align-items: center; gap: 16px;
+      padding: 0 48px; margin-bottom: 24px;
+    }
+    .section-divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent); }
+    .section-divider-text { color: #475569; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+    .bottom-cards-section { padding: 0 48px 40px; }
+
+    .panel {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95);
+      z-index: 300; width: 90vw; max-width: 500px; border-radius: 24px;
+      background: linear-gradient(to bottom, #0a1628, #060e1a);
+      border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+      overflow: hidden; display: none; opacity: 0;
+      transition: opacity 0.25s, transform 0.25s, max-width 0.4s ease; max-height: 90vh;
+    }
+    .panel.open { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    .panel.wide { max-width: 720px; width: 94vw; }
+    .panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 299; display: none; }
+    .panel-overlay.open { display: block; }
+    .panel-header {
+      padding: 20px 24px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0;
+      background: linear-gradient(to bottom, #0a1628, rgba(10,22,40,0.98)); z-index: 5;
+    }
+    .panel-title { display: flex; align-items: center; gap: 10px; }
+    .panel-title svg { width: 18px; height: 18px; color: #38bdf8; }
+    .panel-title h3 { font-size: 17px; font-weight: 700; }
+    .panel-close {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.7); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .panel-close:hover { background: rgba(255,255,255,0.12); }
+    .panel-close svg { width: 12px; height: 12px; }
+    .panel-body { padding: 20px 24px; overflow-y: auto; max-height: calc(90vh - 80px); }
+
+    .panel-accent { height: 4px; border-radius: 99px; width: 100%; margin-bottom: 20px; }
+    .panel-accent.blue { background: linear-gradient(to right, #0ea5e9, #6366f1); }
+    .panel-accent.green { background: linear-gradient(to right, #34d399, #0ea5e9); }
+    .panel-accent.pink { background: linear-gradient(to right, #fb7185, #f472b6); }
+    .panel-accent.yellow { background: linear-gradient(to right, #fbbf24, #f97316); }
+    .panel-accent.rainbow { background: linear-gradient(to right, #34d399, #38bdf8, #818cf8); }
+    .panel-hint { color: #64748b; font-size: 12px; margin-bottom: 16px; }
+
+    .blog-date { font-size: 11px; color: #475569; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 16px; }
+    .blog-heading {
+      font-size: 20px; font-weight: 800; margin-bottom: 12px;
+      background: linear-gradient(to right, #fff, #7dd3fc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .blog-text { font-size: 14px; color: #cbd5e1; line-height: 1.8; margin-bottom: 20px; }
+    .blog-img-wrap { margin: 20px 0; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
+    .blog-img-wrap img { width: 100%; display: block; object-fit: cover; max-height: 320px; }
+    .blog-img-caption { padding: 10px 16px; font-size: 12px; color: #64748b; font-style: italic; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); }
+    .blog-img-placeholder {
+      width: 100%; height: 200px; border-radius: 16px;
+      border: 2px dashed rgba(56,189,248,0.2); background: rgba(14,165,233,0.03);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; margin: 20px 0; color: #38bdf8; font-size: 12px; font-weight: 600;
+    }
+    .blog-img-placeholder svg { width: 28px; height: 28px; opacity: 0.5; }
+    .blog-divider { height: 1px; margin: 28px 0; background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent); }
+    .blog-quote {
+      padding: 16px 20px; margin: 20px 0; border-radius: 14px;
+      border-left: 3px solid #38bdf8; background: rgba(14,165,233,0.06);
+      font-size: 14px; color: #94a3b8; font-style: italic; line-height: 1.7;
+    }
+
+    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .photo-cell {
+      border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02); transition: border-color 0.3s, transform 0.2s; cursor: pointer;
+    }
+    .photo-cell:hover { border-color: rgba(96,165,250,0.3); transform: scale(1.02); }
+    .photo-cell img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+    .photo-cell-caption { padding: 8px 10px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid rgba(255,255,255,0.04); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .photo-cell-placeholder {
+      width: 100%; aspect-ratio: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px; background: rgba(59,130,246,0.04);
+    }
+    .photo-cell-placeholder svg { width: 24px; height: 24px; color: rgba(96,165,250,0.3); }
+    .photo-cell-placeholder span { font-size: 10px; color: #475569; }
+    .photo-coming-soon {
+      margin-top: 20px; text-align: center; padding: 20px; border-radius: 14px;
+      border: 1px dashed rgba(96,165,250,0.2); background: rgba(59,130,246,0.03);
+    }
+    .photo-coming-soon svg { width: 24px; height: 24px; color: #60a5fa; margin-bottom: 8px; }
+    .photo-coming-soon p { font-size: 13px; color: #64748b; font-weight: 600; }
+    .photo-coming-soon span { font-size: 11px; color: #475569; }
+
+    .friend-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);
+      margin-bottom: 10px; transition: background 0.2s, border-color 0.2s;
+      text-decoration: none; color: inherit; cursor: pointer;
+    }
+    .friend-item:hover { background: rgba(66,103,178,0.1); border-color: rgba(66,103,178,0.3); }
+    .friend-avatar {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 16px; flex-shrink: 0;
+      overflow: hidden; background: rgba(66,103,178,0.15); color: #4267B2;
+    }
+    .friend-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .friend-avatar-letter { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+    .friend-info { flex: 1; min-width: 0; }
+    .friend-name { font-size: 14px; font-weight: 600; }
+    .friend-fb { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #64748b; margin-top: 4px; }
+    .friend-fb svg { width: 12px; height: 12px; color: #4267B2; }
+    .friend-link-icon {
+      width: 32px; height: 32px; border-radius: 10px; background: rgba(66,103,178,0.12);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s;
+    }
+    .friend-item:hover .friend-link-icon { background: rgba(66,103,178,0.25); }
+    .friend-link-icon svg { width: 14px; height: 14px; color: #4267B2; }
+
+    .song-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);
+      margin-bottom: 10px; cursor: pointer; transition: background 0.2s, border-color 0.2s;
+    }
+    .song-item:hover { background: rgba(30,215,96,0.08); border-color: rgba(30,215,96,0.25); }
+    .song-item.now-playing { background: rgba(30,215,96,0.12); border-color: rgba(30,215,96,0.35); }
+    .song-num { width: 24px; text-align: center; font-size: 13px; color: #475569; font-weight: 600; flex-shrink: 0; }
+    .song-item.now-playing .song-num { color: #1ed760; }
+    .song-album { width: 48px; height: 48px; border-radius: 10px; flex-shrink: 0; overflow: hidden; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06); }
+    .song-album img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .song-album-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 22px; background: linear-gradient(135deg, rgba(30,215,96,0.1), rgba(99,102,241,0.1)); }
+    .song-info { flex: 1; min-width: 0; }
+    .song-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .song-item.now-playing .song-title { color: #1ed760; }
+    .song-artist { font-size: 12px; color: #64748b; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .song-duration { font-size: 12px; color: #475569; flex-shrink: 0; }
+    .song-play-icon {
+      width: 28px; height: 28px; border-radius: 50%; background: rgba(30,215,96,0.15);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.2s, transform 0.2s;
+    }
+    .song-item:hover .song-play-icon { background: rgba(30,215,96,0.3); transform: scale(1.1); }
+    .song-play-icon svg { width: 12px; height: 12px; color: #1ed760; }
+
+    @keyframes eqBar1 { 0%,100%{height:4px} 50%{height:16px} }
+    @keyframes eqBar2 { 0%,100%{height:8px} 50%{height:20px} }
+    @keyframes eqBar3 { 0%,100%{height:6px} 50%{height:14px} }
+    .eq-bars { display: flex; align-items: flex-end; gap: 2px; height: 20px; justify-content: center; }
+    .eq-bars span { width: 3px; border-radius: 2px; background: #1ed760; }
+    .eq-bars span:nth-child(1) { animation: eqBar1 0.8s ease infinite; }
+    .eq-bars span:nth-child(2) { animation: eqBar2 0.6s ease infinite 0.1s; }
+    .eq-bars span:nth-child(3) { animation: eqBar3 0.7s ease infinite 0.2s; }
+    .eq-bars.paused span { animation-play-state: paused; }
+
+    .game-item {
+      display: flex; gap: 14px; padding: 14px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); margin-bottom: 12px;
+    }
+    .game-icon { width: 52px; height: 52px; border-radius: 12px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+    .game-info { flex: 1; }
+    .game-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .game-detail { display: flex; gap: 8px; margin-bottom: 2px; }
+    .game-label { color: #38bdf8; font-weight: 700; font-size: 11px; min-width: 56px; }
+    .game-value { color: #cbd5e1; font-family: monospace; font-size: 11px; }
+
+    .hobby-section { padding: 14px; border-radius: 12px; margin-bottom: 12px; }
+    .hobby-section.blue { border: 1px solid rgba(56,189,248,0.2); background: rgba(14,165,233,0.05); }
+    .hobby-section.pink { border: 1px solid rgba(251,113,133,0.2); background: rgba(244,63,94,0.05); }
+    .hobby-section.gray { border: 1px solid rgba(148,163,184,0.2); background: rgba(100,116,139,0.05); }
+    .hobby-section-title { font-weight: 700; font-size: 13px; margin-bottom: 10px; }
+    .hobby-section.blue .hobby-section-title { color: #38bdf8; }
+    .hobby-section.pink .hobby-section-title { color: #fb7185; }
+    .hobby-section.gray .hobby-section-title { color: #94a3b8; }
+    .hobby-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .hobby-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #cbd5e1; }
+    .hobby-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+
+    .soon-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); margin-bottom: 8px;
+    }
+    .soon-emoji { font-size: 20px; }
+    .soon-info { flex: 1; }
+    .soon-label { font-size: 13px; font-weight: 700; }
+    .soon-desc { font-size: 11px; color: #475569; }
+    .soon-badge {
+      padding: 2px 8px; border-radius: 6px; background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.2); color: #fbbf24; font-size: 10px;
+      font-weight: 700; letter-spacing: 1px;
+    }
+
+    .about-site-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); margin-bottom: 8px;
+    }
+    .about-site-item span.icon { font-size: 18px; }
+    .about-site-item .label { font-size: 13px; font-weight: 700; }
+    .about-site-item .desc { font-size: 11px; color: #475569; }
+
+    .email-form { display: flex; flex-direction: column; gap: 14px; }
+    .email-form label { font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: block; }
+    .email-form input, .email-form textarea, .email-form select {
+      width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; color: white;
+      font-size: 14px; font-family: inherit; outline: none;
+      transition: border-color 0.2s, background 0.2s; resize: none;
+    }
+    .email-form input:focus, .email-form textarea:focus, .email-form select:focus { border-color: rgba(56,189,248,0.4); background: rgba(255,255,255,0.06); }
+    .email-form select option { background: #0a1628; }
+    .email-form textarea { height: 100px; }
+    .send-btn {
+      padding: 12px 24px; border-radius: 12px; background: linear-gradient(to right, #0ea5e9, #6366f1);
+      border: none; color: white; font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .send-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .send-btn svg { width: 16px; height: 16px; }
+    .sent-msg { text-align: center; padding: 20px; color: #22c55e; font-size: 14px; font-weight: 600; display: none; }
+    .sent-msg svg { width: 40px; height: 40px; margin: 0 auto 10px; display: block; }
+
+    footer { padding: 40px 48px 32px; }
+    .footer-divider { height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent); margin-bottom: 36px; }
+    .footer-inner { display: flex; flex-direction: column; align-items: center; }
+    .footer-label { font-size: 11px; color: #475569; letter-spacing: 4px; text-transform: uppercase; font-weight: 600; margin-bottom: 20px; }
+    .socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+    .social-link {
+      display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);
+      color: #64748b; text-decoration: none; font-size: 13px; font-weight: 600;
+      transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden;
+    }
+    .social-link svg { width: 18px; height: 18px; transition: color 0.3s; }
+    .social-link:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .social-link.tiktok::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(37,244,238,0.15),rgba(255,0,80,0.15)); opacity:0; transition:opacity 0.3s; border-radius:14px; }
+    .social-link.tiktok:hover::before { opacity: 1; }
+    .social-link.tiktok:hover { border-color: rgba(255,0,80,0.4); color: #fff; }
+    .social-link.tiktok:hover svg { color: #ff0050; }
+    .social-link.gmail:hover { background: rgba(234,67,53,0.12); border-color: rgba(234,67,53,0.35); color: #f87171; }
+    .social-link.gmail:hover svg { color: #ea4335; }
+    .social-link.facebook:hover { background: rgba(66,103,178,0.15); border-color: rgba(66,103,178,0.35); color: #93b4f5; }
+    .social-link.facebook:hover svg { color: #4267B2; }
+    .social-link.instagram::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(131,58,180,0.15),rgba(253,29,29,0.15),rgba(252,176,69,0.15)); opacity:0; transition:opacity 0.3s; border-radius:14px; }
+    .social-link.instagram:hover::before { opacity: 1; }
+    .social-link.instagram:hover { border-color: rgba(225,48,108,0.4); color: #f472b6; }
+    .social-link.instagram:hover svg { color: #E1306C; }
+    .footer-copy { font-size: 11px; color: #1e3a5f; margin-top: 32px; }
+
+    .music-player {
+      position: fixed; z-index: 500; display: none; flex-direction: column;
+      border-radius: 20px; background: linear-gradient(135deg, #0c1a2e 0%, #0a1226 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(30,215,96,0.06);
+      overflow: hidden; min-width: 280px; min-height: 160px; width: 340px;
+      transition: left 0.4s cubic-bezier(0.16,1,0.3,1), top 0.4s cubic-bezier(0.16,1,0.3,1), width 0.3s ease;
+    }
+    .music-player.visible { display: flex; animation: playerSlideIn 0.4s cubic-bezier(0.16,1,0.3,1); }
+    .music-player.hiding { animation: playerSlideOut 0.3s ease forwards; }
+    .music-player.dragging { transition: none !important; cursor: grabbing; }
+    .music-player.snapping { transition: left 0.4s cubic-bezier(0.16,1,0.3,1), top 0.4s cubic-bezier(0.16,1,0.3,1), width 0.3s ease; }
+    @keyframes playerSlideIn { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes playerSlideOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+    .snap-indicator { position:fixed; width:80px; height:80px; border:2px dashed rgba(30,215,96,0.3); border-radius:16px; z-index:499; background:rgba(30,215,96,0.05); display:none; pointer-events:none; }
+    .snap-indicator.show { display: block; animation: snapPulse 0.8s ease infinite; }
+    @keyframes snapPulse { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
+    #snap-tl{top:16px;left:16px} #snap-tr{top:16px;right:16px} #snap-bl{bottom:16px;left:16px} #snap-br{bottom:16px;right:16px}
+    .player-glow { position:absolute; top:-40px; left:-40px; width:160px; height:160px; border-radius:50%; background:rgba(30,215,96,0.08); filter:blur(40px); pointer-events:none; animation:glowPulse 3s ease infinite; }
+    @keyframes glowPulse { 0%,100%{opacity:0.4;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.2)} }
+    .player-glow.paused { animation-play-state: paused; opacity: 0.2; }
+    .player-drag-handle { padding:6px 0 2px; display:flex; justify-content:center; cursor:grab; position:relative; z-index:10; }
+    .player-drag-handle:active { cursor: grabbing; }
+    .drag-dots { display:flex; gap:3px; }
+    .drag-dots span { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,0.15); }
+    .player-top { padding:8px 16px; display:flex; align-items:center; gap:12px; position:relative; z-index:1; }
+    .player-disc {
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; animation: discSpin 3s linear infinite;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4); position: relative; overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+    .player-disc.paused { animation-play-state: paused; }
+    @keyframes discSpin { to { transform: rotate(360deg); } }
+    .player-disc-art { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+    .player-disc-fallback {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: conic-gradient(from 0deg, #1ed760, #0ea5e9, #6366f1, #ec4899, #1ed760);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .player-disc-hole {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #0c1a2e; border: 2px solid rgba(255,255,255,0.15); z-index: 2;
+    }
+    .player-song-info { flex:1; min-width:0; }
+    .player-song-title { font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .player-song-artist { font-size:11px; color:#64748b; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .player-header-btns { display:flex; gap:6px; flex-shrink:0; }
+    .p-hdr-btn { width:26px; height:26px; border-radius:50%; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04); color:#475569; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+    .p-hdr-btn:hover { background:rgba(255,255,255,0.1); color:#fff; }
+    .p-hdr-btn.close-btn:hover { background:rgba(239,68,68,0.15); border-color:rgba(239,68,68,0.3); color:#f87171; }
+    .p-hdr-btn svg { width:11px; height:11px; }
+    .yt-container { width:0; height:0; overflow:hidden; position:absolute; pointer-events:none; opacity:0; }
+    .player-progress-wrap { padding:0 16px; display:flex; align-items:center; gap:8px; position:relative; z-index:1; }
+    .player-time { font-size:10px; color:#475569; font-weight:600; width:32px; flex-shrink:0; }
+    .player-time.right { text-align:right; }
+    .player-progress-bar { flex:1; height:4px; border-radius:4px; background:rgba(255,255,255,0.08); cursor:pointer; position:relative; overflow:hidden; }
+    .player-progress-fill { height:100%; border-radius:4px; background:linear-gradient(to right,#1ed760,#0ea5e9); width:0%; transition:width 0.3s linear; }
+    .player-controls { padding:8px 16px 14px; display:flex; align-items:center; justify-content:center; gap:6px; position:relative; z-index:1; }
+    .ctrl-btn { border:none; background:none; color:#94a3b8; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; border-radius:50%; position:relative; }
+    .ctrl-btn:hover { color:#fff; }
+    .ctrl-btn svg { width:16px; height:16px; }
+    .ctrl-btn.shuffle,.ctrl-btn.repeat { width:32px; height:32px; }
+    .ctrl-btn.shuffle.active,.ctrl-btn.repeat.active { color:#1ed760; }
+    .ctrl-btn.shuffle.active::after,.ctrl-btn.repeat.active::after { content:''; position:absolute; bottom:1px; width:4px; height:4px; border-radius:50%; background:#1ed760; }
+    .ctrl-btn.prev,.ctrl-btn.next { width:36px; height:36px; }
+    .ctrl-btn.prev:hover,.ctrl-btn.next:hover { transform:scale(1.1); }
+    .ctrl-btn.play-pause { width:42px; height:42px; background:#1ed760; color:#000; border-radius:50%; margin:0 4px; box-shadow:0 4px 16px rgba(30,215,96,0.3); }
+    .ctrl-btn.play-pause:hover { transform:scale(1.08); background:#22ff6e; }
+    .ctrl-btn.play-pause svg { width:18px; height:18px; }
+    .resize-handle { position:absolute; bottom:0; right:0; width:20px; height:20px; cursor:nwse-resize; z-index:20; display:flex; align-items:center; justify-content:center; }
+    .resize-handle::after { content:''; width:10px; height:10px; border-right:2px solid rgba(255,255,255,0.15); border-bottom:2px solid rgba(255,255,255,0.15); border-radius:0 0 4px 0; }
+
+    @media (max-width: 640px) {
+      header, .cards-section, .bottom-cards-section, .section-divider, footer { padding-left: 20px; padding-right: 20px; }
+      .title-box { padding: 20px 24px; }
+      .music-player { min-width: 260px; width: 300px; }
+      .photo-grid { gap: 8px; }
+      .panel.wide { max-width: 95vw; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- INTRO SCREEN -->
+<div class="intro-screen" id="intro-screen">
+  <div class="intro-logo">CHCK<span class="dot">.</span></div>
+  <p class="intro-tagline">Life of Being a Chuck</p>
+  <div class="intro-line"></div>
+  <button class="intro-enter" onclick="dismissIntro()">Enter</button>
+</div>
+
+<!-- FALLING HEARTS -->
+<div class="hearts-container" id="hearts-container"></div>
+
+<div class="blob1"></div>
+<div class="blob2"></div>
+<div class="snap-indicator" id="snap-tl"></div>
+<div class="snap-indicator" id="snap-tr"></div>
+<div class="snap-indicator" id="snap-bl"></div>
+<div class="snap-indicator" id="snap-br"></div>
+
+<div class="wrapper">
+  <header>
+    <div class="logo"><span>CHCK</span><span class="dot">.</span></div>
+    <div class="hamburger-wrap">
+      <button class="hamburger-btn" onclick="toggleMenu()" aria-label="Menu">
+        <svg id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg id="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="dropdown" id="dropdown">
+        <div class="dropdown-inner">
+          <div class="dropdown-section-label">Main</div>
+          <button class="menu-item" onclick="openPanel('friends')"><div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="menu-text"><div class="menu-label">Friend List</div><div class="menu-desc">See my circle</div></div><div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div></button>
+          <button class="menu-item" onclick="openPanel('email')"><div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg></div><div class="menu-text"><div class="menu-label">Email Support</div><div class="menu-desc">Get in touch</div></div><div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div></button>
+          <button class="menu-item" onclick="openPanel('songs')"><div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="menu-text"><div class="menu-label">Favorite Songs</div><div class="menu-desc">My playlist</div></div><div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div></button>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-section-label">Info</div>
+          <button class="menu-item" onclick="openPanel('aboutsite')"><div class="menu-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div><div class="menu-text"><div class="menu-label">About This Site</div><div class="menu-desc">What is CHCK.?</div></div><div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div></button>
+          <button class="menu-item" onclick="openPanel('comingsoon')"><div class="menu-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="menu-text"><div class="menu-label">More Panels Soon</div><div class="menu-desc">What's coming</div></div><div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div></button>
+        </div>
+        <div class="dropdown-footer">CHCK. v1.0 — 2026</div>
+      </div>
+    </div>
+  </header>
+  <section class="hero">
+    <button class="title-btn" onclick="openAbout()">
+      <div class="title-glow"></div>
+      <div class="title-box">
+        <h1>Life of Being a Chuck</h1>
+        <p class="title-hint">tap to learn about me😝</p>
+      </div>
+    </button>
+  </section>
+
+  <!-- Top 3 cards -->
+  <section class="cards-section">
+    <div class="cards-grid">
+      <div class="card sky">
+        <div class="card-icon sky">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <h3>My Full Blog</h3>
+        <p>Dive into my stories, my experiences, and the lessons I've learned along the way.</p>
+        <a class="card-btn" onclick="openPanel('blog')">Explore More
+          <span class="arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12,5 19,12 12,19"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+      <div class="card blue">
+        <div class="card-icon blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21,15 16,10 5,21"/>
+          </svg>
+        </div>
+        <h3>Photo Collection</h3>
+        <p>A visual journey through my life — captured moments, favorite places, and memories.</p>
+        <a class="card-btn" onclick="openPanel('photos')">See More
+          <span class="arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12,5 19,12 12,19"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+      <div class="card indigo">
+        <div class="card-icon indigo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+            <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+          </svg>
+        </div>
+        <h3>Future Plans</h3>
+        <p>Where I'm headed next — goals, dreams, and the roadmap I've set for myself.</p>
+        <a class="card-btn" onclick="openPanel('plans')">Read More
+          <span class="arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12,5 19,12 12,19"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <span class="section-divider-text">More About Me</span>
+    <div class="section-divider-line"></div>
+  </div>
+  <section class="bottom-cards-section">
+    <div class="cards-grid">
+      <div class="card green"><div class="card-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg></div><h3>Game Profiles</h3><p>The games I play and how to add me — come find me in-game!</p><a class="card-btn" onclick="openPanel('games')">See My Accounts <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span></a></div>
+      <div class="card pink"><div class="card-icon pink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div><h3>Hobbies & Likes</h3><p>What I love doing, what I enjoy, and what I absolutely cannot stand.</p><a class="card-btn" onclick="openPanel('hobbies')">Learn More <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span></a></div>
+      <div class="card yellow"><div class="card-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg></div><h3>Coming Soon</h3><p>More sections are being cooked up. Stay tuned for what's next on CHCK.!</p><a class="card-btn" onclick="openPanel('comingsoon')">Peek Inside <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span></a></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-divider"></div>
+    <div class="footer-inner">
+      <p class="footer-label">Connect with me</p>
+      <div class="socials">
+        <a href="https://www.tiktok.com/@_m.kiwiii" target="_blank" class="social-link tiktok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.81a8.23 8.23 0 004.76 1.5v-3.4a4.85 4.85 0 01-1-.22z"/></svg>TikTok</a>
+        <a href="mailto:rhaymeshach925@gmail.com" class="social-link gmail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>Gmail</a>
+        <a href="https://www.facebook.com/_m.kiwiii" target="_blank" class="social-link facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook</a>
+        <a href="https://www.instagram.com/_m.kiwiii" target="_blank" class="social-link instagram"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>Instagram</a>
+      </div>
+      <p class="footer-copy">© 2026 CHCK. — All rights reserved.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- ABOUT MODAL -->
+<div class="overlay" id="about-overlay" onclick="closeAbout()"></div>
+<div class="modal" id="about-modal">
+  <div class="modal-bar"></div>
+  <button class="modal-close" onclick="closeAbout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="modal-body">
+    <div class="avatar">C</div>
+    <h2>Hellooooo! My name is Rhay Meshach Budayao</h2>
+    <div class="modal-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Poblacion, Kabayan, Benguet</div>
+    <p>Welcome to my corner of the internet. I'm just a regular student navigating life, sharing my thoughts, my favorite moments, and the little things that make it all worth it. My nickname is Chuck in case y'all don't know :3</p>
+    <div class="modal-tags">
+      <div class="tag sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Dreamer</div>
+      <div class="tag indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Creator</div>
+      <div class="tag green">🎮 Gamer</div>
+      <div class="tag pink">🤍 Humble</div>
+      <div class="tag rose">💖 Kind</div>
+      <div class="tag violet">💜 Loving</div>
+      <div class="tag amber">😎 Omnichalant (is that a thing?)</div>
+      <div class="tag teal">🌿 Optimistic (maybe?)</div>
+      <div class="tag slate">🤷 Clueless</div>
+      <div class="tag cyan">😱 OA (wehhhh?)</div>
+      <div class="tag sky">🐢 Timid</div>
+      <div class="tag pink">🫣 Shy (ayaaa? k-kuno)</div>
+    </div>
+  </div>
+</div>
+
+<div class="panel-overlay" id="panel-overlay" onclick="closePanel()"></div>
+
+<!-- BLOG PANEL -->
+<div class="panel wide" id="panel-blog">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </svg>
+      <h3>My Full Blog</h3>
+    </div>
+    <button class="panel-close" onclick="closePanel()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <div class="blog-content">
+      <div class="blog-date">January 26, 2026</div>
+      <h2 class="blog-heading">The Beginning of Something New</h2>
+      <p class="blog-text">Good day, good night. Before the beginning of the first day of work immersion, we were assigned to work at the Municipal Development and Planning Office. The first thing that people did there was to greet us and they're so so heartwarming and so so kind talaga. Destine and I may be quiet but we enjoyed our moments there, especially during workshop or meetings. Why? Simple, there was free food. Like, food-food. Free snacks, lunch meals, after lunch delicacy, yummy.</p>
+      <div class="blog-img-wrap"><img src="" alt="" onerror="this.parentElement.style.display='none'" /><div class="blog-img-caption"></div></div>
+      <div class="blog-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>Insert image URL in src=""</div>
+      <p class="blog-text">But that's not the only reason why we enjoyed our stay in MPDO, we also enjoyed our work which was very engaging. Although, the work we did was not aligned to our future courses/dreams (Destine, Forensics. Me, IT/ComSci), we were delighted that they still asked us to do something that is VERY VERY important. Their stories and chismis did kept us awake most of the time but if we don't have anything to do or if we finished our assigned tasks, I scroll in socmed, play games, or sleep on my desk.</p>
+      <p class="blog-text">But to clear up something, we assisted in handing out foods during break time or lunch, greeting people, asking them to list their names and signatures for attendance, and assist them if they're struggling with something like helping out folks without computer/laptop knowledge regarding the use of Microsoft Office.</p>
+      <div class="blog-quote">"Teamwwork begins in trust. And the only way to do that is to overcome our need for invulnerability."</div>
+      <div class="blog-divider"></div>
+      <div class="blog-date">February 23, 2026</div>
+      <h2 class="blog-heading">Before It All Started</h2>
+      <p class="blog-text">My name is Rhay Meshach C. Budayao. I was born on Januray 9, 2008 at Baguio General Hospital (and yes, I'm 18 years old now which is very very scary). I partially lived my life as a kid at Brookside, Baguio, and I met many friends there, some have dysfuntional families and some have a normal, comforting household-- I was one of the dysfuntional families. I won't get into much details but I know how parents tend to argue from small things to big things-- I won't be like them.</p>
+      <div class="blog-img-wrap"><img src="" alt="" onerror="this.parentElement.style.display='none'" /><div class="blog-img-caption"></div></div>
+      <div class="blog-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>Insert image URL in src=""</div>
+      <p class="blog-text">My mother may be strict when I was a child, but she's very loving and caring. And the reason why she was strict with me was not because to show her superiority and control over me but her act of love as a mother. My father on the other hand, was the chillest and also caring like my mother. He's also the reason why I love playing games.</p>
+      <p class="blog-text">He introduced me to Warcraft III: The Frozen Throne, which was remade in 2020 as Warcraft III: Reforged. It was a very popular PC game in the mid-2000s. At first, I didn't know what to do in the game, but he taught me how to play. I still remember introducing the game to my friends afterward, but they didn't know what to do either, they were just as clueless as I was when I first started. He also owned a PlayStation Portable (PSP) and we played Dissidia: Final Fantasy a lot-- it was one of my favorite games to play at the time.</p>
+      <div class="blog-quote">"Life is a game. Until you realize it's pay to win."</div>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO PANEL -->
+<div class="panel wide" id="panel-photos">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21,15 16,10 5,21"/>
+      </svg>
+      <h3>Photo Collection</h3>
+    </div>
+    <button class="panel-close" onclick="closePanel()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <div class="photo-grid">
+      <div class="photo-cell"><img src="https://i.postimg.cc/gkdwfWck/IMG-20260126-094958-761.jpg" alt="" onerror="this.outerHTML='<div class=\'photo-cell-placeholder\'><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg><span>Add photo</span></div>'" /><div class="photo-cell-caption">Selfie selfie? wehhhhh??</div></div>
+      <div class="photo-cell"><img src="" alt="" onerror="this.outerHTML='<div class=\'photo-cell-placeholder\'><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg><span>Add photo</span></div>'" /><div class="photo-cell-caption">Caption 2</div></div>
+      <div class="photo-cell"><img src="" alt="" onerror="this.outerHTML='<div class=\'photo-cell-placeholder\'><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg><span>Add photo</span></div>'" /><div class="photo-cell-caption">Caption 3</div></div>
+      <div class="photo-cell"><img src="" alt="" onerror="this.outerHTML='<div class=\'photo-cell-placeholder\'><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg><span>Add photo</span></div>'" /><div class="photo-cell-caption">Caption 4</div></div>
+      <div class="photo-cell"><img src="" alt="" onerror="this.outerHTML='<div class=\'photo-cell-placeholder\'><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg><span>Add photo</span></div>'" /><div class="photo-cell-caption">Deep talks muna dito after work immersion, eyyy.</div></div>
+      <div class="photo-cell"><img src="" alt="" onerror="this.outerHTML='<div class=\'photo-cell-placeholder\'><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg><span>Add photo</span></div>'" /><div class="photo-cell-caption">Caption 6</div></div>
+      <div class="photo-cell"><img src="" alt="" onerror="this.outerHTML='<div class=\'photo-cell-placeholder\'><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg><span>Add photo</span></div>'" /><div class="photo-cell-caption">Caption 7</div></div>
+      <div class="photo-cell"><img src="" alt="" onerror="this.outerHTML='<div class=\'photo-cell-placeholder\'><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg><span>Add photo</span></div>'" /><div class="photo-cell-caption">Caption 8</div></div>
+      <div class="photo-cell"><img src="" alt="" onerror="this.outerHTML='<div class=\'photo-cell-placeholder\'><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg><span>Add photo</span></div>'" /><div class="photo-cell-caption">Caption 9</div></div>
+    </div>
+    <div class="photo-coming-soon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p>More pictures coming soon!</p>
+      <span>Stay tuned for new memories 📸</span>
+    </div>
+  </div>
+</div>
+
+<!-- FUTURE PLANS PANEL -->
+<div class="panel wide" id="panel-plans">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+      </svg>
+      <h3>Future Plans</h3>
+    </div>
+    <button class="panel-close" onclick="closePanel()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <div class="blog-content">
+      <div class="blog-date">2026 Goals</div>
+      <h2 class="blog-heading">Where I'm Headed</h2>
+      <p class="blog-text">YOUR PLANS.</p>
+      <div class="blog-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>Insert image URL in src=""</div>
+      <div class="blog-quote">"The best way to predict the future is to create it." — Peter Drucker</div>
+      <div class="blog-divider"></div>
+      <div class="blog-date">Long-term Vision</div>
+      <h2 class="blog-heading">The Bigger Picture</h2>
+      <p class="blog-text">Where do you see yourself in 5 years?</p>
+      <div class="blog-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>Insert image URL in src=""</div>
+    </div>
+  </div>
+</div>
+
+<!-- FRIEND LIST PANEL -->
+<div class="panel" id="panel-friends">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <h3>Friend List</h3>
+    </div>
+    <button class="panel-close" onclick="closePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="panel-body" id="friends-list">
+    <div class="panel-accent blue"></div>
+    <p class="panel-hint">The people who make life better 💙</p>
+<a href="https://www.facebook.com/andre.abad.2025/" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/4DThq1Q.jpeg" data-letter="A"><div class="friend-avatar"><div class="friend-avatar-letter">A</div></div><div class="friend-info"><div class="friend-name">Andre W. Abad</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/elyk.bulayo" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/m5TGdp5.jpeg" data-letter="J"><div class="friend-avatar"><div class="friend-avatar-letter">J</div></div><div class="friend-info"><div class="friend-name">Jannrey Kyle N. Bulayo</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/VenerableWizard" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/hGb6WRS.jpeg" data-letter="G"><div class="friend-avatar"><div class="friend-avatar-letter">G</div></div><div class="friend-info"><div class="friend-name">Glean Lymar B. Domasi</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/az.jhunierayy" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/wqnn7YP.jpeg" data-letter="J"><div class="friend-avatar"><div class="friend-avatar-letter">J</div></div><div class="friend-info"><div class="friend-name">Jhunie Ray D. Fianza</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/giovann.maranes" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/fCmU0vV.jpeg" data-letter="G"><div class="friend-avatar"><div class="friend-avatar-letter">G</div></div><div class="friend-info"><div class="friend-name">Giovann O. Maranes</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/aeron.clark.898749" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/lKCjl3g.jpeg" data-letter="A"><div class="friend-avatar"><div class="friend-avatar-letter">A</div></div><div class="friend-info"><div class="friend-name">Aeron Clark A. Pedro</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/profile.php?id=61581826664949" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/1ZQ0c5u.jpeg" data-letter="K"><div class="friend-avatar"><div class="friend-avatar-letter">K</div></div><div class="friend-info"><div class="friend-name">Kyan Lloyd P. Pedro</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://www.facebook.com/nathan.dryle.1/" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/ZmtH83E.jpeg" data-letter="N"><div class="friend-avatar"><div class="friend-avatar-letter">N</div></div><div class="friend-info"><div class="friend-name">Nathan P. Penchog</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/brokenbondofatoms" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/64N6VDl.jpeg" data-letter="W"><div class="friend-avatar"><div class="friend-avatar-letter">W</div></div><div class="friend-info"><div class="friend-name">Wayde M. Pucol</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/em.my.221807" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/H0AuO6j.jpeg" data-letter="J"><div class="friend-avatar"><div class="friend-avatar-letter">J</div></div><div class="friend-info"><div class="friend-name">Jeremy T. Sanche</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/desiderium07" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/LkSnFMM.jpeg" data-letter="L"><div class="friend-avatar"><div class="friend-avatar-letter">L</div></div><div class="friend-info"><div class="friend-name">Lindcymere B. Atinan</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/bugtong.clyyy" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/8l9B8Ga.jpeg" data-letter="D"><div class="friend-avatar"><div class="friend-avatar-letter">D</div></div><div class="friend-info"><div class="friend-name">Dafnie Clyre Bugtong</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/leryk.diclas" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/eK9bwrc.jpeg" data-letter="K"><div class="friend-avatar"><div class="friend-avatar-letter">K</div></div><div class="friend-info"><div class="friend-name">Khyrel Mae L. Diclas</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/shydebdky" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/lGlRJLJ.png" data-letter="H"><div class="friend-avatar"><div class="friend-avatar-letter">H</div></div><div class="friend-info"><div class="friend-name">Hailey Shyde S. Budikey</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/the.only.leigh09" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/lGlRJLJ.png" data-letter="Z"><div class="friend-avatar"><div class="friend-avatar-letter">Z</div></div><div class="friend-info"><div class="friend-name">Zaira Leigh M. Empizo</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/rhiza.medon" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/GO9DnS7.jpeg" data-letter="J"><div class="friend-avatar"><div class="friend-avatar-letter">J</div></div><div class="friend-info"><div class="friend-name">Janine Rhiza H. Medon</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/angel.christine.oros" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/i8t2UAL.jpeg" data-letter="A"><div class="friend-avatar"><div class="friend-avatar-letter">A</div></div><div class="friend-info"><div class="friend-name">Angel Christine B. Oros</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/its.plel.theoneandonly.17" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/AaYQT6V.jpeg" data-letter="A"><div class="friend-avatar"><div class="friend-avatar-letter">A</div></div><div class="friend-info"><div class="friend-name">April Grey E. Sage</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+<a href="https://web.facebook.com/ung.bonsaii" target="_blank" class="friend-item" data-pfp="https://i.imgur.com/QTHDq4V.jpeg" data-letter="D"><div class="friend-avatar"><div class="friend-avatar-letter">D</div></div><div class="friend-info"><div class="friend-name">Destine Jayle K. Sangao</div><div class="friend-fb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Profile</div></div><div class="friend-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg></div></a>
+  </div>
+</div>
+
+<!-- SONGS PANEL -->
+<div class="panel" id="panel-songs">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <h3>Favorite Songs</h3>
+    </div>
+    <button class="panel-close" onclick="closePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="panel-body" id="songs-list">
+<div class="song-item" onclick="playSong(0)" data-src="https://www.youtube.com/watch?v=KK3tIclJ140&list=RDKK3tIclJ140&start_radio=1&pp=ygUFYnV3YW6gBwE%3D" data-album="https://i.scdn.co/image/ab67616d0000b2731916f5fab42ee22fd89b18cd"><div class="song-num">1</div><div class="song-album"><div class="song-album-placeholder">🎵</div></div><div class="song-info"><div class="song-title">Buwan</div><div class="song-artist">juan karlos</div></div><div class="song-duration">5:39</div><div class="song-play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+<div class="song-item" onclick="playSong(3)" data-src="https://www.youtube.com/watch?v=pagHrb1RBks&list=RDpagHrb1RBks&start_radio=1&pp=ygUJbWVkeW8gYWtvoAcB" data-album="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGjRuQ-SEBjN3-aU13rH_S5g0vvDoxjQwWIA&s"><div class="song-num">4</div><div class="song-album"><div class="song-album-placeholder">🎹</div></div><div class="song-info"><div class="song-title">Medyo Ako</div><div class="song-artist">juan karlos ft. Moira Dela Torre</div></div><div class="song-duration">4:14</div><div class="song-play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+<div class="song-item" onclick="playSong(1)" data-src="https://www.youtube.com/watch?v=1wzIzQFgdRY&list=RD1wzIzQFgdRY&start_radio=1&pp=ygUfaWthdyBhbmcgcGF0dXR1bmd1aGFuIGFtaWVsIHNvbKAHAQ%3D%3D" data-album="https://i.scdn.co/image/ab67616d0000b2737be15ee0efb3b1beccca530d"><div class="song-num">2</div><div class="song-album"><div class="song-album-placeholder">🎶</div></div><div class="song-info"><div class="song-title">Ikaw Ang Patutunguhan</div><div class="song-artist">Amiel Sol</div></div><div class="song-duration">5:41</div><div class="song-play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+<div class="song-item" onclick="playSong(2)" data-src="https://www.youtube.com/watch?v=51Jn7_lW58o&list=RD51Jn7_lW58o&start_radio=1&pp=ygUHdGFoYW5hbqAHAQ%3D%3D" data-album="https://i.scdn.co/image/ab67616d0000b2739568b0205dda7e2b8d7465ee"><div class="song-num">3</div><div class="song-album"><div class="song-album-placeholder">🎸</div></div><div class="song-info"><div class="song-title">Tahanan</div><div class="song-artist">El Manu</div></div><div class="song-duration">5:06</div><div class="song-play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+<div class="song-item" onclick="playSong(4)" data-src="" data-album=""><div class="song-num">5</div><div class="song-album"><div class="song-album-placeholder">🎤</div></div><div class="song-info"><div class="song-title">As It Was</div><div class="song-artist">Harry Styles</div></div><div class="song-duration">2:37</div><div class="song-play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+<div class="song-item" onclick="playSong(5)" data-src="" data-album=""><div class="song-num">6</div><div class="song-album"><div class="song-album-placeholder">🎧</div></div><div class="song-info"><div class="song-title">Unholy</div><div class="song-artist">Sam Smith & Kim Petras</div></div><div class="song-duration">2:37</div><div class="song-play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+  </div>
+</div>
+
+<!-- EMAIL PANEL -->
+<div class="panel" id="panel-email">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+      <h3>Email Support</h3>
+    </div>
+    <button class="panel-close" onclick="closePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="panel-body">
+    <div id="email-form-wrap">
+      <div class="email-form">
+        <div><label>Your Name</label><input type="text" id="email-name" placeholder="e.g. John Doe" /></div>
+        <div><label>Your Email</label><input type="email" id="email-addr" placeholder="you@example.com" /></div>
+        <div><label>Topic</label><select id="email-topic"><option value="">Select a topic...</option><option>General Inquiry</option><option>Collaboration</option><option>Blog Feedback</option><option>Say Hi!</option><option>Other</option></select></div>
+        <div><label>Message</label><textarea id="email-msg" placeholder="Write your message here..."></textarea></div>
+        <button class="send-btn" onclick="sendEmail()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>Send Message</button>
+      </div>
+    </div>
+    <div class="sent-msg" id="sent-msg"><svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>Message sent! I'll get back to you soon 🙌</div>
+  </div>
+</div>
+
+<!-- GAME PROFILES PANEL -->
+<div class="panel" id="panel-games">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
+      <h3>Game Profiles</h3>
+    </div>
+    <button class="panel-close" onclick="closePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-accent green"></div>
+    <p class="panel-hint">The games I play — come find me!</p>
+    <div class="game-item"><div class="game-icon">🎮</div><div class="game-info"><div class="game-name">Mobile Legends</div><div class="game-detail"><span class="game-label">IGN:</span><span class="game-value">KIWIII</span></div><div class="game-detail"><span class="game-label">ID</span><span class="game-value">109295686</span></div><div class="game-detail"><span class="game-label">Highest Rank:</span><span class="game-value">Mythical Glory, 51 Stars</span></div></div></div>
+    <div class="game-item"><div class="game-icon">🔫</div><div class="game-info"><div class="game-name">Call of Duty: Mobile</div><div class="game-detail"><span class="game-label">IGN:</span><span class="game-value">ID</span></div><div class="game-detail"><span class="game-label">Highest Rank:</span><span class="game-value">Legendary, 9,200+ pts</span></div></div></div>
+    <div class="game-item"><div class="game-icon">🧱</div><div class="game-info"><div class="game-name">Roblox</div><div class="game-detail"><span class="game-label">User:</span><span class="game-value">mekiwiii001</span></div></div></div>
+  </div>
+</div>
+
+<!-- HOBBIES PANEL -->
+<div class="panel" id="panel-hobbies">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+      <h3>Hobbies & Likes</h3>
+    </div>
+    <button class="panel-close" onclick="closePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-accent pink"></div>
+    <div class="hobby-section blue"><p class="hobby-section-title">🎯 Hobbies</p>
+      <ul class="hobby-list">
+        <li><span class="hobby-dot" style="background:#38bdf8"></span>Photography — capturing moments</li>
+        <li><span class="hobby-dot" style="background:#38bdf8"></span>Gaming — mobile and PC</li>
+        <li><span class="hobby-dot" style="background:#38bdf8"></span>Playing guitar</li>
+        <li><span class="hobby-dot" style="background:#38bdf8"></span>Listening to music on repeat</li>
+        <li><span class="hobby-dot" style="background:#38bdf8"></span>Exploring new places</li>
+        <li><span class="hobby-dot" style="background:#38bdf8"></span>Watching anime & series</li>
+        <li><span class="hobby-dot" style="background:#38bdf8"></span>Read manhwa (Korean comic)/manhua (Chinese comic)</li>
+      </ul>
+    </div>
+    <div class="hobby-section pink"><p class="hobby-section-title">❤️ Things I Like</p>
+      <ul class="hobby-list">
+        <li><span class="hobby-dot" style="background:#fb7185"></span>Cats & capybaras 🐱🐾</li>
+        <li><span class="hobby-dot" style="background:#fb7185"></span>Rainy days with coffee</li>
+        <li><span class="hobby-dot" style="background:#fb7185"></span>Late night drives</li>
+        <li><span class="hobby-dot" style="background:#fb7185"></span>Honest deep conversations</li>
+        <li><span class="hobby-dot" style="background:#fb7185"></span>Good food with good company</li>
+      </ul>
+    </div>
+    <div class="hobby-section gray"><p class="hobby-section-title">💔 Things I Dislike</p>
+      <ul class="hobby-list">
+        <li><span class="hobby-dot" style="background:#94a3b8"></span>Fake people and plastic vibes</li>
+        <li><span class="hobby-dot" style="background:#94a3b8"></span>Being woken up early for no reason</li>
+        <li><span class="hobby-dot" style="background:#94a3b8"></span>Slow internet 😭</li>
+        <li><span class="hobby-dot" style="background:#94a3b8"></span>Unnecessary drama</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT THIS SITE PANEL -->
+<div class="panel" id="panel-aboutsite">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      <h3>About This Site</h3>
+    </div>
+    <button class="panel-close" onclick="closePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-accent rainbow"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#38bdf8,#818cf8);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;flex-shrink:0">C</div><div><p style="font-weight:900;font-size:15px">CHCK.</p><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.2);color:#a5b4fc;letter-spacing:1px">v1.0 — 2026</span></div></div>
+    <div style="padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);margin-bottom:12px"><p style="color:#38bdf8;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">What is this?</p><p style="color:#cbd5e1;font-size:13px;line-height:1.6">This is my personal blog website — a space where I share my life, my thoughts, and everything in between. Built from scratch with love.</p></div>
+    <div class="about-site-item"><span class="icon">📖</span><div><p class="label">My Blog</p><p class="desc">Personal stories & daily life.</p></div></div>
+    <div class="about-site-item"><span class="icon">📷</span><div><p class="label">Photos</p><p class="desc">Captured moments.</p></div></div>
+    <div class="about-site-item"><span class="icon">🎵</span><div><p class="label">Music</p><p class="desc">Songs on repeat.</p></div></div>
+    <div class="about-site-item"><span class="icon">👥</span><div><p class="label">Friends</p><p class="desc">The people who matter.</p></div></div>
+    <div class="about-site-item"><span class="icon">🎮</span><div><p class="label">Game Profiles</p><p class="desc">Games I play.</p></div></div>
+  </div>
+</div>
+
+<!-- COMING SOON PANEL -->
+<div class="panel" id="panel-comingsoon">
+  <div class="panel-header">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <h3>More Panels Soon</h3>
+    </div>
+    <button class="panel-close" onclick="closePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-accent yellow"></div>
+    <p class="panel-hint">Big things are being cooked up for CHCK.!</p>
+    <div class="soon-item"><span class="soon-emoji">💕</span><div class="soon-info"><p class="soon-label">Crushes</p><p class="soon-desc">Iisa lang eh... May F and R sa pangalan... FrFr...</p></div><span class="soon-badge">SOON</span></div>
+    <div class="soon-item"><span class="soon-emoji">🏆</span><div class="soon-info"><p class="soon-label">Achievements</p><p class="soon-desc">Things I've accomplished</p></div><span class="soon-badge">SOON</span></div>
+    <div class="soon-item"><span class="soon-emoji">📺</span><div class="soon-info"><p class="soon-label">Anime / Watchlist</p><p class="soon-desc">What I've seen and next</p></div><span class="soon-badge">SOON</span></div>
+    <div class="soon-item"><span class="soon-emoji">🌿</span><div class="soon-info"><p class="soon-label">Nature Gallery</p><p class="soon-desc">My photography</p></div><span class="soon-badge">SOON</span></div>
+    <div class="soon-item"><span class="soon-emoji">🏠</span><div class="soon-info"><p class="soon-label">Room Tour</p><p class="soon-desc">My little corner</p></div><span class="soon-badge">SOON</span></div>
+    <div class="soon-item"><span class="soon-emoji">😂</span><div class="soon-info"><p class="soon-label">Meme Board</p><p class="soon-desc">For the culture</p></div><span class="soon-badge">SOON</span></div>
+  </div>
+</div>
+
+<!-- MUSIC PLAYER -->
+<div class="music-player" id="music-player">
+  <div class="player-glow" id="player-glow"></div>
+  <div class="player-drag-handle" id="drag-handle"><div class="drag-dots"><span></span><span></span><span></span><span></span><span></span></div></div>
+  <div class="player-top">
+    <div class="player-disc" id="player-disc"><div class="player-disc-fallback" id="disc-fallback"></div><img class="player-disc-art" id="disc-art" src="" alt="" style="display:none" /><div class="player-disc-hole"></div></div>
+    <div class="player-song-info"><div class="player-song-title" id="player-title">—</div><div class="player-song-artist" id="player-artist">—</div></div>
+    <div class="player-header-btns"><button class="p-hdr-btn close-btn" onclick="stopPlayer()" title="Stop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  </div>
+  <div class="yt-container" id="yt-container"><div id="yt-player-div"></div></div>
+  <div class="player-progress-wrap"><span class="player-time" id="player-current">0:00</span><div class="player-progress-bar" id="progress-bar" onclick="seekTrack(event)"><div class="player-progress-fill" id="progress-fill"></div></div><span class="player-time right" id="player-total">0:00</span></div>
+  <div class="player-controls">
+    <button class="ctrl-btn shuffle" id="btn-shuffle" onclick="toggleShuffle()" title="Shuffle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16,3 21,3 21,8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21,16 21,21 16,21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+    <button class="ctrl-btn prev" onclick="prevSong()" title="Previous"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="3" height="14" rx="1"/><polygon points="21,5 10,12 21,19"/></svg></button>
+    <button class="ctrl-btn play-pause" id="btn-play-pause" onclick="togglePlayPause()"><svg id="pp-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg><svg id="pp-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg></button>
+    <button class="ctrl-btn next" onclick="nextSong()" title="Next"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="3,5 14,12 3,19"/><rect x="18" y="5" width="3" height="14" rx="1"/></svg></button>
+    <button class="ctrl-btn repeat" id="btn-repeat" onclick="toggleRepeat()" title="Repeat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17,1 21,5 17,9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7,23 3,19 7,15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+  </div>
+  <div class="resize-handle" id="resize-handle"></div>
+</div>
+
+<audio id="audio-player" preload="auto"></audio>
+
+<script>
+  function dismissIntro(){
+    document.getElementById('intro-screen').classList.add('hidden');
+    spawnHearts();
+  }
+
+  function spawnHearts(){
+    const container=document.getElementById('hearts-container');
+    const hearts=['💙','💜','🤍','🩵','🩶'];
+    function createHeart(){
+      const h=document.createElement('div');
+      h.className='falling-heart';
+      h.textContent=hearts[Math.floor(Math.random()*hearts.length)];
+      h.style.left=Math.random()*100+'%';
+      h.style.fontSize=(12+Math.random()*14)+'px';
+      h.style.animationDuration=(8+Math.random()*12)+'s';
+      h.style.animationDelay=Math.random()*2+'s';
+      h.style.opacity=0.06+Math.random()*0.1;
+      container.appendChild(h);
+      h.addEventListener('animationend',()=>h.remove());
+    }
+    for(let i=0;i<12;i++)setTimeout(()=>createHeart(),i*400);
+    setInterval(()=>{if(container.children.length<20)createHeart();},1800);
+  }
+
+  function toggleMenu(){const d=document.getElementById('dropdown'),m=document.getElementById('icon-menu'),x=document.getElementById('icon-x'),o=d.classList.toggle('open');m.style.display=o?'none':'';x.style.display=o?'':'none';}
+  document.addEventListener('click',e=>{if(!document.querySelector('.hamburger-wrap').contains(e.target)){document.getElementById('dropdown').classList.remove('open');document.getElementById('icon-menu').style.display='';document.getElementById('icon-x').style.display='none';}});
+  function openAbout(){document.getElementById('about-overlay').classList.add('open');document.getElementById('about-modal').classList.add('open');}
+  function closeAbout(){document.getElementById('about-overlay').classList.remove('open');document.getElementById('about-modal').classList.remove('open');}
+
+  const allPanels=['friends','songs','email','blog','photos','plans','games','hobbies','aboutsite','comingsoon'];
+  function openPanel(t){document.getElementById('dropdown').classList.remove('open');document.getElementById('icon-menu').style.display='';document.getElementById('icon-x').style.display='none';document.getElementById('panel-overlay').classList.add('open');document.getElementById('panel-'+t).classList.add('open');}
+  function closePanel(){document.getElementById('panel-overlay').classList.remove('open');allPanels.forEach(id=>document.getElementById('panel-'+id).classList.remove('open'));}
+
+  function sendEmail(){const n=document.getElementById('email-name').value.trim(),a=document.getElementById('email-addr').value.trim(),m=document.getElementById('email-msg').value.trim();if(!n||!a||!m){alert('Please fill in all fields!');return;}document.getElementById('email-form-wrap').style.display='none';document.getElementById('sent-msg').style.display='block';setTimeout(()=>{document.getElementById('email-form-wrap').style.display='block';document.getElementById('sent-msg').style.display='none';['email-name','email-addr','email-msg','email-topic'].forEach(id=>document.getElementById(id).value='');},3500);}
+
+  document.querySelectorAll('#friends-list .friend-item').forEach(el=>{
+    const pfp=el.getAttribute('data-pfp')||'',letter=el.getAttribute('data-letter')||'?',av=el.querySelector('.friend-avatar');
+    if(pfp)av.innerHTML='<img src="'+pfp+'" alt="pfp" onerror="this.parentElement.innerHTML=\'<div class=friend-avatar-letter>'+letter+'</div>\'" />';
+  });
+
+  const audioEl=document.getElementById('audio-player'),songItems=document.querySelectorAll('#songs-list .song-item'),playerEl=document.getElementById('music-player');
+  let playlist=[],currentIndex=-1,isPlaying=false,shuffleOn=false,repeatOn=false,progressTimer=null,currentMode=null,ytPlayer=null,ytReady=false,ytPendingVideoId=null,currentCorner='bl';
+  songItems.forEach(el=>{const a=el.getAttribute('data-album')||'',d=el.querySelector('.song-album');if(a)d.innerHTML='<img src="'+a+'" alt="album" onerror="this.parentElement.innerHTML=\'<div class=song-album-placeholder>🎵</div>\'" />';playlist.push({title:el.querySelector('.song-title').textContent,artist:el.querySelector('.song-artist').textContent,src:el.getAttribute('data-src')||'',album:a,duration:el.querySelector('.song-duration').textContent});});
+  function getYouTubeId(u){if(!u)return null;let m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([a-zA-Z0-9_-]{11})/);return m?m[1]:null;}
+
+  (function(){var tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.head.appendChild(tag);})();
+  function onYouTubeIframeAPIReady(){ytPlayer=new YT.Player('yt-player-div',{height:'1',width:'1',playerVars:{autoplay:0,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0},events:{onReady:()=>{ytReady=true;if(ytPendingVideoId){ytPlayer.loadVideoById(ytPendingVideoId);ytPendingVideoId=null;}},onStateChange:(e)=>{if(e.data===YT.PlayerState.ENDED){if(repeatOn){ytPlayer.seekTo(0);ytPlayer.playVideo();}else nextSong();}if(e.data===YT.PlayerState.PLAYING){setPlayingState(true);startYTProgress();}if(e.data===YT.PlayerState.PAUSED)setPlayingState(false);}}});}
+
+  function updateDiscArt(u){const a=document.getElementById('disc-art'),f=document.getElementById('disc-fallback');if(u){a.src=u;a.style.display='block';f.style.display='none';a.onerror=function(){a.style.display='none';f.style.display='flex';};}else{a.style.display='none';f.style.display='flex';}}
+  function playSong(i){if(i<0||i>=playlist.length)return;currentIndex=i;const s=playlist[i];clearInterval(progressTimer);document.getElementById('player-title').textContent=s.title;document.getElementById('player-artist').textContent=s.artist;document.getElementById('player-total').textContent=s.duration;document.getElementById('player-current').textContent='0:00';document.getElementById('progress-fill').style.width='0%';updateDiscArt(s.album);songItems.forEach((el,j)=>{el.classList.toggle('now-playing',j===i);el.querySelector('.song-num').innerHTML=j===i?'<div class="eq-bars"><span></span><span></span><span></span></div>':(j+1);});playerEl.classList.remove('hiding');playerEl.classList.add('visible');snapToCorner(currentCorner);audioEl.pause();audioEl.src='';if(ytPlayer&&ytReady)try{ytPlayer.stopVideo();}catch(e){}const y=getYouTubeId(s.src);if(y){currentMode='youtube';if(ytReady&&ytPlayer)ytPlayer.loadVideoById(y);else ytPendingVideoId=y;}else if(s.src){currentMode='audio';audioEl.src=s.src;audioEl.play().then(()=>setPlayingState(true)).catch(()=>setPlayingState(true));startAudioProgress();}else{currentMode='demo';setPlayingState(true);simulateProgress();}}
+  function setPlayingState(p){isPlaying=p;document.getElementById('pp-play').style.display=p?'none':'';document.getElementById('pp-pause').style.display=p?'':'none';document.getElementById('player-disc').classList.toggle('paused',!p);document.getElementById('player-glow').classList.toggle('paused',!p);document.querySelectorAll('.eq-bars').forEach(eq=>eq.classList.toggle('paused',!p));}
+  function togglePlayPause(){if(currentIndex===-1)return;if(currentMode==='youtube'&&ytPlayer&&ytReady){if(isPlaying)ytPlayer.pauseVideo();else ytPlayer.playVideo();}else if(currentMode==='audio'){if(isPlaying){audioEl.pause();setPlayingState(false);clearInterval(progressTimer);}else{audioEl.play().catch(()=>{});setPlayingState(true);startAudioProgress();}}else{if(isPlaying){setPlayingState(false);clearInterval(progressTimer);}else{setPlayingState(true);simulateProgress();}}}
+  function nextSong(){if(!playlist.length)return;let n=shuffleOn?Math.floor(Math.random()*playlist.length):(currentIndex+1)%playlist.length;if(n===currentIndex&&playlist.length>1&&shuffleOn)n=(n+1)%playlist.length;playSong(n);}
+  function prevSong(){if(!playlist.length)return;if(currentMode==='youtube'&&ytPlayer&&ytReady&&ytPlayer.getCurrentTime()>3){ytPlayer.seekTo(0);return;}if(currentMode==='audio'&&audioEl.currentTime>3){audioEl.currentTime=0;return;}let p=shuffleOn?Math.floor(Math.random()*playlist.length):(currentIndex-1+playlist.length)%playlist.length;playSong(p);}
+  function toggleShuffle(){shuffleOn=!shuffleOn;document.getElementById('btn-shuffle').classList.toggle('active',shuffleOn);}
+  function toggleRepeat(){repeatOn=!repeatOn;document.getElementById('btn-repeat').classList.toggle('active',repeatOn);audioEl.loop=repeatOn;}
+  function stopPlayer(){audioEl.pause();audioEl.src='';if(ytPlayer&&ytReady)try{ytPlayer.stopVideo();}catch(e){}isPlaying=false;currentIndex=-1;currentMode=null;clearInterval(progressTimer);playerEl.classList.add('hiding');setTimeout(()=>playerEl.classList.remove('visible','hiding'),300);songItems.forEach((el,i)=>{el.classList.remove('now-playing');el.querySelector('.song-num').innerHTML=i+1;});}
+  function seekTrack(e){const b=document.getElementById('progress-bar'),p=(e.clientX-b.getBoundingClientRect().left)/b.offsetWidth;if(currentMode==='youtube'&&ytPlayer&&ytReady)ytPlayer.seekTo(p*ytPlayer.getDuration());else if(currentMode==='audio'&&audioEl.duration)audioEl.currentTime=p*audioEl.duration;document.getElementById('progress-fill').style.width=(p*100)+'%';}
+  function fmtTime(s){return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
+  function startAudioProgress(){clearInterval(progressTimer);progressTimer=setInterval(()=>{if(!audioEl.duration)return;document.getElementById('progress-fill').style.width=(audioEl.currentTime/audioEl.duration*100)+'%';document.getElementById('player-current').textContent=fmtTime(audioEl.currentTime);},300);}
+  function startYTProgress(){clearInterval(progressTimer);progressTimer=setInterval(()=>{if(!ytPlayer||!ytReady)return;try{const c=ytPlayer.getCurrentTime(),d=ytPlayer.getDuration();if(d>0){document.getElementById('progress-fill').style.width=(c/d*100)+'%';document.getElementById('player-current').textContent=fmtTime(c);document.getElementById('player-total').textContent=fmtTime(d);}}catch(e){}},500);}
+  let simProg=0;function simulateProgress(){clearInterval(progressTimer);simProg=0;const parts=(playlist[currentIndex]?.duration||'3:00').split(':'),totalSec=parseInt(parts[0])*60+parseInt(parts[1]);progressTimer=setInterval(()=>{if(!isPlaying)return;simProg+=0.3;const pct=(simProg/totalSec)*100;if(pct>=100){clearInterval(progressTimer);if(repeatOn)playSong(currentIndex);else nextSong();return;}document.getElementById('progress-fill').style.width=pct+'%';document.getElementById('player-current').textContent=fmtTime(simProg);},300);}
+  audioEl.addEventListener('ended',()=>{if(repeatOn)audioEl.play();else nextSong();});
+
+  const SNAP_MARGIN=24;const corners={bl:()=>({left:SNAP_MARGIN+'px',top:(window.innerHeight-playerEl.offsetHeight-SNAP_MARGIN)+'px'}),br:()=>({left:(window.innerWidth-playerEl.offsetWidth-SNAP_MARGIN)+'px',top:(window.innerHeight-playerEl.offsetHeight-SNAP_MARGIN)+'px'}),tl:()=>({left:SNAP_MARGIN+'px',top:SNAP_MARGIN+'px'}),tr:()=>({left:(window.innerWidth-playerEl.offsetWidth-SNAP_MARGIN)+'px',top:SNAP_MARGIN+'px'})};
+  function snapToCorner(c){currentCorner=c;const p=corners[c]();playerEl.classList.add('snapping');playerEl.style.left=p.left;playerEl.style.top=p.top;playerEl.style.right='auto';playerEl.style.bottom='auto';setTimeout(()=>playerEl.classList.remove('snapping'),400);}
+  function findClosestCorner(x,y){const cx=x+playerEl.offsetWidth/2,cy=y+playerEl.offsetHeight/2,sx=window.innerWidth/2,sy=window.innerHeight/2;if(cx<=sx&&cy<=sy)return'tl';if(cx>sx&&cy<=sy)return'tr';if(cx<=sx&&cy>sy)return'bl';return'br';}
+  function showSnapIndicators(h){['tl','tr','bl','br'].forEach(c=>document.getElementById('snap-'+c).classList.toggle('show',c===h));}
+  function hideSnapIndicators(){['tl','tr','bl','br'].forEach(c=>document.getElementById('snap-'+c).classList.remove('show'));}
+  let isDragging=false,dragOffX=0,dragOffY=0;
+  document.getElementById('drag-handle').addEventListener('mousedown',e=>{e.preventDefault();isDragging=true;playerEl.classList.add('dragging');const r=playerEl.getBoundingClientRect();dragOffX=e.clientX-r.left;dragOffY=e.clientY-r.top;document.addEventListener('mousemove',onDrag);document.addEventListener('mouseup',endDrag);});
+  document.getElementById('drag-handle').addEventListener('touchstart',e=>{e.preventDefault();isDragging=true;playerEl.classList.add('dragging');const r=playerEl.getBoundingClientRect(),t=e.touches[0];dragOffX=t.clientX-r.left;dragOffY=t.clientY-r.top;document.addEventListener('touchmove',onDragT,{passive:false});document.addEventListener('touchend',endDragT);},{passive:false});
+  function onDrag(e){if(!isDragging)return;playerEl.style.left=(e.clientX-dragOffX)+'px';playerEl.style.top=(e.clientY-dragOffY)+'px';showSnapIndicators(findClosestCorner(e.clientX-dragOffX,e.clientY-dragOffY));}
+  function onDragT(e){if(!isDragging)return;e.preventDefault();const t=e.touches[0];playerEl.style.left=(t.clientX-dragOffX)+'px';playerEl.style.top=(t.clientY-dragOffY)+'px';showSnapIndicators(findClosestCorner(t.clientX-dragOffX,t.clientY-dragOffY));}
+  function endDrag(){isDragging=false;playerEl.classList.remove('dragging');document.removeEventListener('mousemove',onDrag);document.removeEventListener('mouseup',endDrag);const r=playerEl.getBoundingClientRect();hideSnapIndicators();snapToCorner(findClosestCorner(r.left,r.top));}
+  function endDragT(){isDragging=false;playerEl.classList.remove('dragging');document.removeEventListener('touchmove',onDragT);document.removeEventListener('touchend',endDragT);const r=playerEl.getBoundingClientRect();hideSnapIndicators();snapToCorner(findClosestCorner(r.left,r.top));}
+  let isResizing=false,rsX,rsW;
+  document.getElementById('resize-handle').addEventListener('mousedown',e=>{e.preventDefault();e.stopPropagation();isResizing=true;rsX=e.clientX;rsW=playerEl.offsetWidth;document.addEventListener('mousemove',onRS);document.addEventListener('mouseup',endRS);});
+  document.getElementById('resize-handle').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();isResizing=true;rsX=e.touches[0].clientX;rsW=playerEl.offsetWidth;document.addEventListener('touchmove',onRST,{passive:false});document.addEventListener('touchend',endRST);},{passive:false});
+  function onRS(e){if(!isResizing)return;playerEl.style.width=Math.min(500,Math.max(280,rsW+(e.clientX-rsX)))+'px';}
+  function onRST(e){if(!isResizing)return;e.preventDefault();playerEl.style.width=Math.min(500,Math.max(280,rsW+(e.touches[0].clientX-rsX)))+'px';}
+  function endRS(){isResizing=false;document.removeEventListener('mousemove',onRS);document.removeEventListener('mouseup',endRS);}
+  function endRST(){isResizing=false;document.removeEventListener('touchmove',onRST);document.removeEventListener('touchend',endRST);}
+  window.addEventListener('resize',()=>{if(playerEl.classList.contains('visible'))snapToCorner(currentCorner);});
+</script>
+
+</body>
+</html>
